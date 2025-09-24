@@ -23,6 +23,7 @@ const rad = 10;
 const OFFSET_X = -pitch + Math.floor(pitch / 4) + 0.5;
 const OFFSET_Y = -pitch + Math.floor(pitch / 4) + 0.5;
 let indentCircuitLines = true;
+let drawLinksToTimelineViewer = false;
 let curveConnectors = true;
 let showAnnotationRegions = true;
 
@@ -56,6 +57,7 @@ export {
   curveConnectors,
   showAnnotationRegions,
   setIndentCircuitLines,
+  drawLinksToTimelineViewer,
   setCurveConnectors,
   setShowAnnotationRegions,
 };

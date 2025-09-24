@@ -18,7 +18,7 @@
  * - Refactored for CrumPy
  */
 
-import { indentCircuitLines, OFFSET_Y, rad } from "./config.js";
+import { indentCircuitLines, drawLinksToTimelineViewer, OFFSET_Y, rad } from "./config.js";
 import { stroke_connector_to } from "../gates/gate_draw_util.js";
 import { marker_placement } from "../gates/gateset_markers.js";
 
@@ -37,17 +37,7 @@ let MAX_CANVAS_WIDTH = 4096;
  * @param {!number} x_pitch
  * @param {!Map} hitCounts
  */
-function drawTimelineMarkers(
-  ctx,
-  ds,
-  qubitTimeCoordFunc,
-  propagatedMarkers,
-  mi,
-  min_t,
-  max_t,
-  x_pitch,
-  hitCounts,
-) {
+function drawTimelineMarkers(ctx, ds, qubitTimeCoordFunc, propagatedMarkers, mi, min_t, max_t, x_pitch, hitCounts) {
   for (let t = min_t - 1; t <= max_t; t++) {
     if (!hitCounts.has(t)) {
       hitCounts.set(t, new Map());
@@ -78,11 +68,11 @@ function drawTimelineMarkers(
         continue;
       }
       if (b === "X") {
-        ctx.fillStyle = "red";
+        ctx.fillStyle = 'red';
       } else if (b === "Y") {
-        ctx.fillStyle = "green";
+        ctx.fillStyle = 'green';
       } else if (b === "Z") {
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = 'blue';
       } else {
         throw new Error("Not a pauli: " + b);
       }
@@ -96,24 +86,24 @@ function drawTimelineMarkers(
       if (x === undefined || y === undefined) {
         continue;
       }
-      ctx.strokeStyle = "magenta";
+      ctx.strokeStyle = 'magenta';
       ctx.lineWidth = 8;
       ctx.strokeRect(x - dx, y - dy, wx, wy);
       ctx.lineWidth = 1;
-      ctx.fillStyle = "black";
+      ctx.fillStyle = 'black';
       ctx.fillRect(x - dx, y - dy, wx, wy);
     }
     for (let { q1, q2, color } of p0.crossings) {
       let [x1, y1] = qubitTimeCoordFunc(q1, t);
       let [x2, y2] = qubitTimeCoordFunc(q2, t);
       if (color === "X") {
-        ctx.strokeStyle = "red";
+        ctx.strokeStyle = 'red';
       } else if (color === "Y") {
-        ctx.strokeStyle = "green";
+        ctx.strokeStyle = 'green';
       } else if (color === "Z") {
-        ctx.strokeStyle = "blue";
+        ctx.strokeStyle = 'blue';
       } else {
-        ctx.strokeStyle = "purple";
+        ctx.strokeStyle = 'purple';
       }
       ctx.lineWidth = 8;
       stroke_connector_to(ctx, x1, y1, x2, y2);
@@ -236,28 +226,18 @@ function drawTimeline(
   ctx.canvas.height = Math.floor(timelineHeight);
 
   try {
-    ctx.fillStyle = "white";
+    ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     // Draw colored indicators showing Pauli propagation.
     let hitCounts = new Map();
     for (let [mi, p] of propagatedMarkerLayers.entries()) {
-      drawTimelineMarkers(
-        ctx,
-        snap,
-        labelShiftedQTC,
-        p,
-        mi,
-        min_t_clamp,
-        max_t,
-        x_pitch,
-        hitCounts,
-      );
+      drawTimelineMarkers(ctx, snap, labelShiftedQTC, p, mi, min_t_clamp, max_t, x_pitch, hitCounts);
     }
 
     // Draw wire lines.
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "black";
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'black';
     for (let q of qubits) {
       let [x0, y0] = labelShiftedQTC(q, min_t_clamp - 1);
       let [x1, y1] = labelShiftedQTC(q, max_t + 1);
@@ -268,8 +248,8 @@ function drawTimeline(
     }
 
     // Draw wire labels.
-    ctx.textAlign = "right";
-    ctx.textBaseline = "middle";
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
     for (let q of qubits) {
       let [x, y] = labelShiftedQTC(q, min_t_clamp - 1);
       let qx = snap.circuit.qubitCoordData[q * 2];
@@ -287,6 +267,23 @@ function drawTimeline(
       }
       for (let op of layer.iter_gates_and_markers()) {
         op.id_draw(qubitsCoordsFuncForLayer, ctx);
+      }
+    }
+    if (drawLinksToTimelineViewer) {
+      // Draw links to timeslice viewer.
+      ctx.globalAlpha = 0.5;
+      for (let q of qubits) {
+          let [x0, y0] = qubitTimeCoords(q, min_t_clamp - 1);
+          let [x1, y1] = timesliceQubitCoordsFunc(q);
+          if (snap.curMouseX > ctx.canvas.width / 2 && snap.curMouseY >= y0 + OFFSET_Y - TIMELINE_PITCH * 0.55 && snap.curMouseY <= y0 + TIMELINE_PITCH * 0.55 + OFFSET_Y) {
+              ctx.beginPath();
+              ctx.moveTo(x0, y0);
+              ctx.lineTo(x1, y1);
+              ctx.stroke();
+              ctx.fillStyle = 'black';
+              ctx.fillRect(x1 - 20, y1 - 20, 40, 40);
+              ctx.fillRect(ctx.canvas.width / 2, y0 - TIMELINE_PITCH / 3, ctx.canvas.width / 2, TIMELINE_PITCH * 2 / 3);
+          }
       }
     }
   } finally {

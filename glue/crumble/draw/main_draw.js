@@ -97,14 +97,7 @@ function drawMarkers(ctx, snap, qubitCoordsFunc, propagatedMarkerLayers) {
  * @param {!int} mi
  * @param {!Map} hitCount
  */
-function drawSingleMarker(
-  ctx,
-  snap,
-  qubitCoordsFunc,
-  propagatedMarkers,
-  mi,
-  hitCount,
-) {
+function drawSingleMarker(ctx, snap, qubitCoordsFunc, propagatedMarkers, mi, hitCount) {
   let basesQubitMap = propagatedMarkers.atLayer(snap.curLayer + 0.5).bases;
 
   // Convert qubit indices to draw coordinates.
