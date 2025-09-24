@@ -18,18 +18,12 @@
  * - Refactored for CrumPy
  */
 
-import {
-  pitch,
-  rad,
-  showAnnotationRegions,
-  OFFSET_X,
-  OFFSET_Y,
-} from "./config.js";
-import { marker_placement } from "../gates/gateset_markers.js";
-import { drawTimeline } from "./timeline_viewer.js";
-import { PropagatedPauliFrames } from "../circuit/propagated_pauli_frames.js";
-import { stroke_connector_to } from "../gates/gate_draw_util.js";
-import { beginPathPolygon } from "./draw_util.js";
+import {pitch, rad, showAnnotationRegions, OFFSET_X, OFFSET_Y} from "./config.js"
+import {marker_placement} from "../gates/gateset_markers.js";
+import {drawTimeline} from "./timeline_viewer.js";
+import {PropagatedPauliFrames} from "../circuit/propagated_pauli_frames.js";
+import {stroke_connector_to} from "../gates/gate_draw_util.js"
+import {beginPathPolygon} from './draw_util.js';
 
 /**
  * @param {!number|undefined} x
@@ -44,13 +38,9 @@ function xyToPos(x, y) {
   let focusY = y / pitch;
   let roundedX = Math.floor(focusX * 2 + 0.5) / 2;
   let roundedY = Math.floor(focusY * 2 + 0.5) / 2;
-  let centerX = roundedX * pitch;
-  let centerY = roundedY * pitch;
-  if (
-    Math.abs(centerX - x) <= rad &&
-    Math.abs(centerY - y) <= rad &&
-    roundedX % 1 === roundedY % 1
-  ) {
+  let centerX = roundedX*pitch;
+  let centerY = roundedY*pitch;
+  if (Math.abs(centerX - x) <= rad && Math.abs(centerY - y) <= rad && roundedX % 1 === roundedY % 1) {
     return [roundedX, roundedY];
   }
   return [undefined, undefined];
@@ -64,25 +54,25 @@ function xyToPos(x, y) {
  * @param {!int} mi
  */
 function drawCrossMarkers(ctx, snap, qubitCoordsFunc, propagatedMarkers, mi) {
-  let crossings = propagatedMarkers.atLayer(snap.curLayer).crossings;
-  if (crossings !== undefined) {
-    for (let { q1, q2, color } of crossings) {
-      let [x1, y1] = qubitCoordsFunc(q1);
-      let [x2, y2] = qubitCoordsFunc(q2);
-      if (color === "X") {
-        ctx.strokeStyle = "red";
-      } else if (color === "Y") {
-        ctx.strokeStyle = "green";
-      } else if (color === "Z") {
-        ctx.strokeStyle = "blue";
-      } else {
-        ctx.strokeStyle = "purple";
-      }
-      ctx.lineWidth = 8;
-      stroke_connector_to(ctx, x1, y1, x2, y2);
-      ctx.lineWidth = 1;
+    let crossings = propagatedMarkers.atLayer(snap.curLayer).crossings;
+    if (crossings !== undefined) {
+        for (let {q1, q2, color} of crossings) {
+            let [x1, y1] = qubitCoordsFunc(q1);
+            let [x2, y2] = qubitCoordsFunc(q2);
+            if (color === 'X') {
+                ctx.strokeStyle = 'red';
+            } else if (color === 'Y') {
+                ctx.strokeStyle = 'green';
+            } else if (color === 'Z') {
+                ctx.strokeStyle = 'blue';
+            } else {
+                ctx.strokeStyle = 'purple'
+            }
+            ctx.lineWidth = 8;
+            stroke_connector_to(ctx, x1, y1, x2, y2);
+            ctx.lineWidth = 1;
+        }
     }
-  }
 }
 
 /**
@@ -125,17 +115,17 @@ function drawSingleMarker(
 
   // Draw a polygon for the marker set.
   if (mi >= 0 && basisCoords.length > 0) {
-    if (basisCoords.every((e) => e[0] === "X")) {
-      ctx.fillStyle = "red";
-    } else if (basisCoords.every((e) => e[0] === "Y")) {
-      ctx.fillStyle = "green";
-    } else if (basisCoords.every((e) => e[0] === "Z")) {
-      ctx.fillStyle = "blue";
+    if (basisCoords.every(e => e[0] === 'X')) {
+        ctx.fillStyle = 'red';
+    } else if (basisCoords.every(e => e[0] === 'Y')) {
+        ctx.fillStyle = 'green';
+    } else if (basisCoords.every(e => e[0] === 'Z')) {
+        ctx.fillStyle = 'blue';
     } else {
-      ctx.fillStyle = "black";
+        ctx.fillStyle = 'black';
     }
     ctx.strokeStyle = ctx.fillStyle;
-    let coords = basisCoords.map((e) => e[1]);
+    let coords = basisCoords.map(e => e[1]);
     let cx = 0;
     let cy = 0;
     for (let [x, y] of coords) {
@@ -168,34 +158,34 @@ function drawSingleMarker(
 
   // Draw individual qubit markers.
   for (let [b, [x, y]] of basisCoords) {
-    let { dx, dy, wx, wy } = marker_placement(mi, `${x}:${y}`, hitCount);
-    if (b === "X") {
-      ctx.fillStyle = "red";
-    } else if (b === "Y") {
-      ctx.fillStyle = "green";
-    } else if (b === "Z") {
-      ctx.fillStyle = "blue";
-    } else {
-      throw new Error("Not a pauli: " + b);
-    }
-    ctx.fillRect(x - dx, y - dy, wx, wy);
+      let {dx, dy, wx, wy} = marker_placement(mi, `${x}:${y}`, hitCount);
+      if (b === 'X') {
+          ctx.fillStyle = 'red'
+      } else if (b === 'Y') {
+          ctx.fillStyle = 'green'
+      } else if (b === 'Z') {
+          ctx.fillStyle = 'blue'
+      } else {
+          throw new Error('Not a pauli: ' + b);
+      }
+      ctx.fillRect(x - dx, y - dy, wx, wy);
   }
 
   // Show error highlights.
   let errorsQubitSet = propagatedMarkers.atLayer(snap.curLayer).errors;
   for (let q of errorsQubitSet) {
-    let [x, y] = qubitCoordsFunc(q);
-    let { dx, dy, wx, wy } = marker_placement(mi, `${x}:${y}`, hitCount);
-    if (mi < 0) {
-      ctx.lineWidth = 2;
-    } else {
-      ctx.lineWidth = 8;
-    }
-    ctx.strokeStyle = "magenta";
-    ctx.strokeRect(x - dx, y - dy, wx, wy);
-    ctx.lineWidth = 1;
-    ctx.fillStyle = "black";
-    ctx.fillRect(x - dx, y - dy, wx, wy);
+      let [x, y] = qubitCoordsFunc(q);
+      let {dx, dy, wx, wy} = marker_placement(mi, `${x}:${y}`, hitCount);
+      if (mi < 0) {
+          ctx.lineWidth = 2;
+      } else {
+          ctx.lineWidth = 8;
+      }
+      ctx.strokeStyle = 'magenta'
+      ctx.strokeRect(x - dx, y - dy, wx, wy);
+      ctx.lineWidth = 1;
+      ctx.fillStyle = 'black'
+      ctx.fillRect(x - dx, y - dy, wx, wy);
   }
 }
 
@@ -240,35 +230,23 @@ function draw(ctx, snap) {
   for (let layer of circuit.layers) {
     for (let op of layer.markers) {
       let gate = op.gate;
-      if (
-        gate.name === "MARKX" ||
-        gate.name === "MARKY" ||
-        gate.name === "MARKZ"
-      ) {
+      if (gate.name === "MARKX" || gate.name === "MARKY" || gate.name === "MARKZ") {
         numPropagatedLayers = Math.max(numPropagatedLayers, op.args[0] + 1);
       }
     }
   }
 
-  let c2dCoordTransform = (x, y) => [
-    x * pitch - OFFSET_X,
-    y * pitch - OFFSET_Y,
-  ];
-  let qubitDrawCoords = (q) => {
+    let c2dCoordTransform = (x, y) => [x*pitch - OFFSET_X, y*pitch - OFFSET_Y];
+    let qubitDrawCoords = q => {
     let x = circuit.qubitCoordData[2 * q];
     let y = circuit.qubitCoordData[2 * q + 1];
     return c2dCoordTransform(x, y);
   };
-  let propagatedMarkerLayers =
-    /** @type {!Map<!int, !PropagatedPauliFrames>} */ new Map();
+  let propagatedMarkerLayers = /** @type {!Map<!int, !PropagatedPauliFrames>} */ new Map();
   for (let mi = 0; mi < numPropagatedLayers; mi++) {
-    propagatedMarkerLayers.set(
-      mi,
-      PropagatedPauliFrames.fromCircuit(circuit, mi),
-    );
+      propagatedMarkerLayers.set(mi, PropagatedPauliFrames.fromCircuit(circuit, mi));
   }
-
-  let { dets: dets, obs: obs } = circuit.collectDetectorsAndObservables(false);
+  let {dets: dets, obs: obs} = circuit.collectDetectorsAndObservables(false);
   let batch_input = [];
   for (let mi = 0; mi < dets.length; mi++) {
     batch_input.push(dets[mi].mids);
@@ -276,10 +254,7 @@ function draw(ctx, snap) {
   for (let mi of obs.keys()) {
     batch_input.push(obs.get(mi));
   }
-  let batch_output = PropagatedPauliFrames.batchFromMeasurements(
-    circuit,
-    batch_input,
-  );
+  let batch_output = PropagatedPauliFrames.batchFromMeasurements(circuit, batch_input);
   let batch_index = 0;
 
   if (showAnnotationRegions) {
@@ -302,4 +277,4 @@ function draw(ctx, snap) {
   ctx.save();
 }
 
-export { xyToPos, draw, setDefensiveDrawEnabled, OFFSET_X, OFFSET_Y };
+export {xyToPos, draw, setDefensiveDrawEnabled, OFFSET_X, OFFSET_Y}
