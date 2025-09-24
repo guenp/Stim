@@ -46,7 +46,7 @@ function drawTimelineMarkers(ctx, ds, qubitTimeCoordFunc, propagatedMarkers, mi,
     let p1 = propagatedMarkers.atLayer(t + 0.5);
     let p0 = propagatedMarkers.atLayer(t);
     for (let [q, b] of p1.bases.entries()) {
-      let { dx, dy, wx, wy } = marker_placement(mi, q, hitCount);
+      let {dx, dy, wx, wy} = marker_placement(mi, q, hitCount);
       if (mi >= 0 && mi < 4) {
         dx = 0;
         wx = x_pitch;
@@ -67,19 +67,19 @@ function drawTimelineMarkers(ctx, ds, qubitTimeCoordFunc, propagatedMarkers, mi,
       if (x === undefined || y === undefined) {
         continue;
       }
-      if (b === "X") {
-        ctx.fillStyle = 'red';
-      } else if (b === "Y") {
-        ctx.fillStyle = 'green';
-      } else if (b === "Z") {
-        ctx.fillStyle = 'blue';
+      if (b === 'X') {
+          ctx.fillStyle = 'red'
+      } else if (b === 'Y') {
+          ctx.fillStyle = 'green'
+      } else if (b === 'Z') {
+          ctx.fillStyle = 'blue'
       } else {
-        throw new Error("Not a pauli: " + b);
+          throw new Error('Not a pauli: ' + b);
       }
       ctx.fillRect(x - dx, y - dy, wx, wy);
     }
     for (let q of p0.errors) {
-      let { dx, dy, wx, wy } = marker_placement(mi, q, hitCount);
+      let {dx, dy, wx, wy} = marker_placement(mi, q, hitCount);
       dx -= x_pitch / 2;
 
       let [x, y] = qubitTimeCoordFunc(q, t - 0.5);
@@ -93,17 +93,17 @@ function drawTimelineMarkers(ctx, ds, qubitTimeCoordFunc, propagatedMarkers, mi,
       ctx.fillStyle = 'black';
       ctx.fillRect(x - dx, y - dy, wx, wy);
     }
-    for (let { q1, q2, color } of p0.crossings) {
+    for (let {q1, q2, color} of p0.crossings) {
       let [x1, y1] = qubitTimeCoordFunc(q1, t);
       let [x2, y2] = qubitTimeCoordFunc(q2, t);
-      if (color === "X") {
-        ctx.strokeStyle = 'red';
-      } else if (color === "Y") {
-        ctx.strokeStyle = 'green';
-      } else if (color === "Z") {
-        ctx.strokeStyle = 'blue';
+      if (color === 'X') {
+          ctx.strokeStyle = 'red';
+      } else if (color === 'Y') {
+          ctx.strokeStyle = 'green';
+      } else if (color === 'Z') {
+          ctx.strokeStyle = 'blue';
       } else {
-        ctx.strokeStyle = 'purple';
+          ctx.strokeStyle = 'purple'
       }
       ctx.lineWidth = 8;
       stroke_connector_to(ctx, x1, y1, x2, y2);
@@ -119,13 +119,7 @@ function drawTimelineMarkers(ctx, ds, qubitTimeCoordFunc, propagatedMarkers, mi,
  * @param {!function(!int): ![!number, !number]} timesliceQubitCoordsFunc
  * @param {!int} numLayers
  */
-function drawTimeline(
-  ctx,
-  snap,
-  propagatedMarkerLayers,
-  timesliceQubitCoordsFunc,
-  numLayers,
-) {
+function drawTimeline(ctx, snap, propagatedMarkerLayers, timesliceQubitCoordsFunc, numLayers) {
   let w = MAX_CANVAS_WIDTH;
 
   let qubits = snap.timelineQubits();
@@ -161,26 +155,20 @@ function drawTimeline(
       }
       cur_run++;
     }
-    base_y2xy.set(`${x},${y}`, [
-      Math.round(cur_x) + 0.5,
-      Math.round(cur_y) + 0.5,
-    ]);
+    base_y2xy.set(`${x},${y}`, [Math.round(cur_x) + 0.5, Math.round(cur_y) + 0.5]);
     cur_y += TIMELINE_PITCH;
   }
 
-  let x_pitch = TIMELINE_PITCH + Math.ceil(rad * max_run * 0.25);
+  let x_pitch = TIMELINE_PITCH + Math.ceil(rad*max_run*0.25);
   let num_cols_half = Math.floor(w / 2 / x_pitch);
   let min_t_free = snap.curLayer - num_cols_half + 1;
-  let min_t_clamp = Math.max(
-    0,
-    Math.min(min_t_free, numLayers - num_cols_half * 2 + 1),
-  );
-  let max_t = Math.min(min_t_clamp + num_cols_half * 2 + 2, numLayers);
-  let t2t = (t) => {
+  let min_t_clamp = Math.max(0, Math.min(min_t_free, numLayers - num_cols_half*2 + 1));
+  let max_t = Math.min(min_t_clamp + num_cols_half*2 + 2, numLayers);
+  let t2t = t => {
     let dt = t - snap.curLayer;
     dt -= min_t_clamp - min_t_free;
-    return dt * x_pitch;
-  };
+    return dt*x_pitch;
+  }
   let coordTransform_t = ([x, y, t]) => {
     let key = `${x},${y}`;
     if (!base_y2xy.has(key)) {
