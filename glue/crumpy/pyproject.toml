@@ -66,7 +66,7 @@ docs = [
   "stimcirq>=1.15.0",
 ]
 [tool.poetry]
-packages = [{ include = "crumpy" }]
+packages = [{ include = "crumpy", from = "src" }]
 include = [
   { path = "src/js/bundle.js", format = ["sdist", "wheel"] },
 ]
@@ -105,7 +105,7 @@ report.exclude_also = [
 ]
 
 [tool.mypy]
-files = ["crumpy"]
+files = ["src", "tests"]
 python_version = "3.11"
 warn_unused_configs = true
 strict = true
