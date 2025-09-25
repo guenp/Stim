@@ -7,6 +7,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 name = "crumpy"
 authors = [
   { name = "Sam Zappa (Riverlane)", email = "deltakit@riverlane.com" },
+  { name = "Guen Prawiroatmodjo (Riverlane)", email = "deltakit@riverlane.com" },
 ]
 description = "A python library for visualizing Crumble circuits in Jupyter"
 readme = "README.md"
