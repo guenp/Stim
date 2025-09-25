@@ -148,12 +148,12 @@ visualization will require re-bundling** into one optimized ESM file.
 
 To bundle the JavaScript:
 
-1. Navigate to `glue/crumble`
+1. Navigate to `glue/crumpy/src/js`
 2. If you haven't yet, run `npm install` (this will install the
    [esbuild](https://esbuild.github.io/) bundler)
 3. Run `npm run build` (or `npm run watch` for watch mode)
 
-A new bundle should appear at `src/crumpy/bundle.js`.
+A new bundle should appear at `src/js/bundle.js`.
 
 **Note**: If you are working in a Jupyter notebook and re-bundle the JavaScript,
 you may need to restart the notebook kernel and rerun any widget-displaying code
