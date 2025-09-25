@@ -68,7 +68,7 @@ docs = [
 [tool.poetry]
 packages = [{ include = "crumpy" }]
 include = [
-  { path = "crumpy/bundle.js", format = ["sdist", "wheel"] },
+  { path = "src/js/bundle.js", format = ["sdist", "wheel"] },
 ]
 version = "0.0.0"
 
@@ -77,7 +77,7 @@ poetry-dynamic-versioning = { version = ">=1.0.0", extras = ["plugin"] }
 
 [tool.poetry-dynamic-versioning]
 enable = true
-substitution.files = ["crumpy/__init__.py"]
+substitution.files = ["src/crumpy/__init__.py"]
 
 [tool.poetry.group.test.dependencies]
 pytest = ">= 6"

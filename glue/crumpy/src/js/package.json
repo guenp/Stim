@@ -1,0 +1,13 @@
+{
+  "name": "crumpy",
+  "type": "module",
+  "main": "js/main.js",
+  "scripts": {
+    "copy": "cp -r ../../../crumble ./crumble_js/ && cp draw/* crumble_js/draw/ && cp main.js crumble_js/ && cp package.json crumble_js/",
+    "build": "cd crumble_js && esbuild --bundle --format=esm --outfile=../bundle.js ./main.js",
+    "watch": "npm run build -- --watch"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.8"
+  }
+}
